@@ -52,7 +52,7 @@ if first_time:
     ausgewaehlt = st.multiselect("Was interessiert dich besonders?", interessen)
 
     sprachen = ["Deutsch", "Englisch", "Französisch", "Spanisch", "Italienisch"]
-    sprache = st.multiselect("Welche Sprachen bevorzugst du?", sprachen)
+    sprache = st.multiselect("Welche Sprache bevorzugst du?", sprachen)
 
     dauer = st.slider("Wie lange sollte eine ideale Folge für dich dauern? (Minuten)", 5, 120, (20, 60))
 
