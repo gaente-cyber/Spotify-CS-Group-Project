@@ -12,8 +12,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 # Spotify Authentifizierung
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
-    client_id="",
-    client_secret="",
+    client_id="fc02cd59dc6458c9f4a1d749c89dcb",
+    client_secret="766241c8d7b3462d9d0fe7805f06c87a",
     redirect_uri="http://127.0.0.1:8888/callback",
     scope="user-library-read"
 ))
