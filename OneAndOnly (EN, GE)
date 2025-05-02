@@ -156,9 +156,8 @@ if st.session_state.page_number >= len(steps):
         st.title("🎵 Intelligent Spotify Podcast Filter")
 
         st.markdown("""
-        ### ❗ Problem
-        Spotify offers millions of podcasts, but few good filters.  
-        Our app intelligently recommends shows based on your interests, language, duration and mood!
+        ### Your Personal Podcast Search
+        Please fill out the brackets below to get your personal podcast suggestions, tailored to your personal preferences.
         """)
 
         topics = ["True Crime", "Science", "Comedy", "Sports", "Business", "Health", "Technology", "Society"]
