@@ -33,6 +33,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
     scope="user-library-read"
 ))
 
+
 # Step definitions
 steps = ["Welcome", "Interests", "Languages", "Duration", "Mood", "Location"]
 
