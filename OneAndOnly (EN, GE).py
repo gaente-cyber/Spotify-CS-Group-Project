@@ -4,7 +4,7 @@ import json
 import pandas as pd
 import matplotlib.pyplot as plt
 import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
+from spotipy.oauth2 import SpotifyOAuth
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -26,13 +26,12 @@ if "user_profile" not in st.session_state:
 profile_file = "user_profile.json"
 
 # Spotify Authentication
-sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
-    client_id=st.secrets"554c66803ecd4fe5ae23039953589266",  # Replace with real
-    client_secret=st.secrets"42c3865847ef4b1885776511a21290f4",  # Replace with real
+sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
+    client_id="554c66803ecd4fe5ae23039953589266",  # Replace with real
+    client_secret="42c3865847ef4b1885776511a21290f4",  # Replace with real
     redirect_uri="http://127.0.0.1:8501/callback",
     scope="user-library-read"
 ))
-
 
 # Step definitions
 steps = ["Welcome", "Interests", "Languages", "Duration", "Mood", "Location"]
@@ -261,3 +260,4 @@ if st.session_state.page_number >= len(steps):
                             st.pyplot(fig2)
                     else:
                         st.warning("⚠️ No matching podcasts found. Please adjust your filters.")
+
