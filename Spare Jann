@@ -34,7 +34,7 @@ sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
     client_secret=st.secrets"42c3865847ef4b1885776511a21290f4",  # Replace with real
     redirect_uri="http://127.0.0.1:8501/callback",
     scope="user-library-read"
-    ))
+))
 
 
 # Step definitions
