@@ -8,7 +8,7 @@ from spotipy.oauth2 import SpotifyOAuth
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Basic Streamlit config
+# Grundsätzliche Konfiguration/Vorbereitug für Streamlit
 st.set_page_config(page_title="Spotify Podcast Filter", layout="centered")
 
 # Initialize session state
