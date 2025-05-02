@@ -89,9 +89,6 @@ elif st.session_state.page_number == 2:
     language_options = {
         "German": "🇩🇪",
         "English": "🇬🇧",
-        "French": "🇫🇷",
-        "Spanish": "🇪🇸",
-        "Italian": "🇮🇹"
     }
 
     selected_langs = []
@@ -166,8 +163,8 @@ if st.session_state.page_number >= len(steps):
 
         topics = ["True Crime", "Science", "Comedy", "Sports", "Business", "Health", "Technology", "Society"]
         selected_topics = st.multiselect("🎙️ Choose Topics", topics)
-        language_filter = st.multiselect("🌍 Choose Language(s)", ["German", "English", "French", "Spanish", "Italian"])
-        country_code = st.selectbox("🌐 Search in which country?", ["CH", "DE", "AT", "US", "GB", "FR", "IT", "ES"], index=0)
+        language_filter = st.multiselect("🌍 Choose Language(s)", ["German", "English"])
+        country_code = st.selectbox("🌐 Search in which country?", ["CH", "DE", "AT", "US", "GB"], index=0)
         host_name = st.text_input("👤 Host name (optional)")
         guest_name = st.text_input("🧑‍🤝‍🧑 Guest name(s) (optional)")
         min_duration, max_duration = st.slider("⏱️ Episode Duration (Minutes)", 5, 180, (10, 60))
@@ -195,9 +192,6 @@ if st.session_state.page_number >= len(steps):
                     language_map = {
                         "German": "de",
                         "English": "en",
-                        "French": "fr",
-                        "Spanish": "es",
-                        "Italian": "it"
                     }
 
                     allowed_language_codes = [language_map[l] for l in language_filter if l in language_map]
