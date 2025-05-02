@@ -263,6 +263,7 @@ if st.session_state.page_number >= len(steps):
                             lang_counts.plot(kind="bar", color="lightgreen", ax=ax2)
                             ax2.set_ylabel("Count")
                             ax2.set_title("Languages of Recommended Shows")
+                            ax2.set_yticks(range(1, lang_counts.max() + 1))
                             st.pyplot(fig2)
                     else:
                         st.warning("⚠️ No matching podcasts found. Please adjust your filters.")
