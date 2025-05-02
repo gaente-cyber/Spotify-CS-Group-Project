@@ -246,7 +246,7 @@ if st.session_state.page_number >= len(steps):
                             st.markdown(f"[🔗 Go to show on Spotify]({link})")
                             st.markdown("---")
 
-                        # 📈 Add nice visualization
+                        # 📈 Visualization of the Search Results
                         st.subheader("📊 Your Search Insights")
                         if average_duration:
                             names, durations = zip(*average_duration)
