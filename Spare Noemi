@@ -50,3 +50,84 @@ st.progress(progress)
 # Step 0: Welcome 
 if st.session_state.page_number == 0:
     st.title("🎉Welcome to Your Personalized Podcast Experience!")
+    st.markdown("Let's set up your profile to get the best recommendations!")
+
+    if st.button("🚀 Get Started"):
+        next_page()
+
+# Step 1: Interests
+elif st.session_state.page_number == 1:
+    st.title("🎯 Select Your Interests")
+
+    interest_options = {
+        "True Crime": "🕵",
+        "Science": "🧪",
+        "Comedy": "🎭",
+        "Sports": "🎖️",
+        "Business": "📈",
+        "Technology": "💻",
+        "Society": "👥",
+        "Health": "⚕️",
+        "Art": "🎨",
+        "Music": "🎵",
+        "Spirituality": "🧘"
+    }
+
+    selected = []
+    cols = st.columns(3)
+    for idx, (interest, emoji) in enumerate(interest.options.items()):
+        with cols[idx % 3]:
+          if st.checkbox(f"{emoji} {interest}"):
+              selected.append(interest)
+
+    st.session_state.user_profile["interest"] = selected
+
+# Step 2: Languages
+elif st.session_state.page_number == 2:
+    st.title("🌍 Select Your Preferred Languages")
+
+    language_options = {
+        "German": "DE", 
+        "English": "GB",
+    }
+
+    selected_langs = []
+    cols = st.columns(3)
+    for idx, (language, flag) in enumerate(language_options.items()):
+        with cols[idx % 3]:
+            if st.checkbox(f"{flag} {language}"):
+                selected_langs.append(language)
+
+    st.session_state.user_profile["languages"] = selected_langs
+
+# Step 3: Duration
+elif st.session_state.page_number == 3:
+    st.title("🕔 Select Your Ideal Episode Length")
+
+    st.session_state.user_profile["duration"] = st.slider(
+      "Select the duration range (minutes)", 
+      min_value=5, 
+      max_value=120, 
+      value=st.session_state.user_profile["duration"]
+    )
+
+# Step 4: Mood
+elif st.session_state.page_number == 4:
+    st.title("😊 Choose the Mood of Podcast")
+
+    mood_options = [
+        "Relaxation", "Learning", "Laughter", 
+        "Inspiration", "Focus", "Distraction"
+    ]
+
+    selected_moods = st.multiselect("Select one or more moods:", mood_options)
+    st.session_state.user_profile["mood"] = selected_moods
+
+# Step 5: Location 
+elif st.session_state.page_number == 5:
+    st.title("📍 Where Do You Usually Listen?")
+
+    st.session_state.user_profile["location"] = st.selectbox(
+        "Select your main listening location:",
+        ["At home", "On the go", "In the car", "While exercising"]
+    )
