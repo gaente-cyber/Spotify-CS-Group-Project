@@ -29,7 +29,7 @@ profile_file = "user_profile.json"
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
     client_id="554c66803ecd4fe5ae23039953589266",  # Replace with real
     client_secret="42c3865847ef4b1885776511a21290f4",  # Replace with real
-    redirect_uri="http://127.0.0.1:8501/callback",
+    redirect_uri="https://spotify-cs-group-project-xqcsina62p4b8jsffzagp3.streamlit.app",
     scope="user-library-read"
 ))
 
