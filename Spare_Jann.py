@@ -32,7 +32,7 @@ profile_file = "user_profile.json"
 sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
     client_id=st.secrets["SPOTIPY_CLIENT_ID"],  
     client_secret=st.secrets["SPOTIPY_CLIENT_SECRET"],  
-    redirect_uri="http://127.0.0.1:8501/callback",
+    redirect_uri="https://spotify-cs-group-project-xqcsina62p4b8jsffzagp3.streamlit.app",
     scope="user-library-read"
 ))
 
