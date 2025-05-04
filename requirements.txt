@@ -3,4 +3,4 @@ matplotlib
 pandas
 numpy
 scikit-learn
-spotipy
+spotipy==2.23.0
