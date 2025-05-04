@@ -30,8 +30,8 @@ profile_file = "user_profile.json"
 
 # Spotify Authentication
 sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
-    client_id=st.secrets"554c66803ecd4fe5ae23039953589266",  # Replace with real
-    client_secret=st.secrets"42c3865847ef4b1885776511a21290f4",  # Replace with real
+    client_id=st.secrets["554c66803ecd4fe5ae23039953589266"],  # Replace with real
+    client_secret=st.secrets["42c3865847ef4b1885776511a21290f4"],  # Replace with real
     redirect_uri="http://127.0.0.1:8501/callback",
     scope="user-library-read"
 ))
