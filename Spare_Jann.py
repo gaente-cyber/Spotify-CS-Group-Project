@@ -11,8 +11,6 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-st.write("CLIENT_ID:", st.secrets.get("SPOTIPY_CLIENT_ID", "NOT FOUND"))
-
 # Grundsätzliche Konfiguration/Vorbereitug für Streamlit
 st.set_page_config(page_title="Spotify Podcast Filter", layout="centered")
 
