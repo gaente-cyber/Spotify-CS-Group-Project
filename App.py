@@ -18,7 +18,7 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
-logger = logging.getLogger(_name_)
+logger = logging.getLogger(__name__)
 
 # -------------------- Streamlit Config --------------------
 st.set_page_config(page_title="Spotify Podcast Filter", layout="centered")
