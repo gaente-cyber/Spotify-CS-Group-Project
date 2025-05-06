@@ -187,6 +187,8 @@ if 0 < st.session_state.page_number_app < len(welcome_steps):
         if st.session_state.page_number_app < len(welcome_steps) - 1:
             st.button("➡️ Next", on_click=next_page)
 
+# Navigationsfunktion des Blocks: Zeigt die Navigations Buttons in der App. Die Buttons sind die "Zurück" und "Weiter"-Buttons. Mit diesen kann der Nutzer zwischen den Startseiten navigieren.
+
 # -------------------- Hauptteil der App --------------------
 if st.session_state.page_number_app >= len(welcome_steps):
     if os.path.exists(profile_file):
