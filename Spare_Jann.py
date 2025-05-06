@@ -75,7 +75,7 @@ st.progress(progress)
 # -------------------- Schritt 0: Begrüssung der Nutzerinnen in der Streamlit App --------------------
 if st.session_state.page_number_app == 0:
     st.title("Welcome to Your Personalized Podcast Experience!")
-    st.markdown("Let's set up your profile to get the best recommendations!")
+    st.markdown("Let's set up your profile to get the best podcast recommendations!")
     if st.button("🚀 Get Started"):
         logger.info("User started onboarding.")
         next_page()
@@ -168,7 +168,7 @@ elif st.session_state.page_number_app == 5:
             with open(profile_file, "w") as f:
                 json.dump(st.session_state.user_profile, f)
             logger.info(f"User profile saved: {st.session_state.user_profile}")
-            st.success("🎉 Your profile has been saved! Starting the app...")
+            st.success("🎉 Your profile has been saved! Starting the podcast filter...")
             next_page()
         except Exception as e:
             logger.exception("Failed to save user profile.")
