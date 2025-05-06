@@ -205,7 +205,7 @@ if st.session_state.page_number_app >= len(welcome_steps):
         st.markdown("### Your Personal Podcast Search")
 
         topics = ["True Crime", "Science", "Comedy", "Sports", "Business", "Health", "Technology", "Society"]
-        selected_topics = st.multiselect("🎙️ Choose Topics", topics)
+        selected_topics = st.multiselect("🎙️ Choose Podcast Topics", topics)
         language_filter = st.multiselect("🌍 Choose Language(s)", ["German", "English"])
         country_code = st.selectbox("🌐 Search in which country?", ["CH", "DE", "AT", "US", "GB"], index=0)
         host_name = st.text_input("👤 Host name (optional)")
