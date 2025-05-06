@@ -274,7 +274,7 @@ if st.session_state.page_number_app >= len(welcome_steps):
                                 st.image(image_url, width=200)
                                 st.markdown(f"*🎧 {name}* – by {publisher}")
                                 st.write(f"📝 {description[:250]}...")
-                                st.markdown(f"[🔗 Go to show on Spotify]({link})")
+                                st.markdown(f"[🔗 Go to podcast show on Spotify]({link})")
                                 st.markdown("---")
 
                             # Visualization
