@@ -277,7 +277,7 @@ if st.session_state.page_number_app >= len(welcome_steps):
                                 st.markdown(f"[🔗 Go to podcast show on Spotify]({link})")
                                 st.markdown("---")
 
-                            # Visualization
+                            # Visualisierung der Podcast Suchresultate
                             st.subheader("📊 Your Search Insights")
                             if average_duration:
                                 logger.info("Plotting average episode durations.")
