@@ -156,7 +156,7 @@ elif st.session_state.page_number_app == 4:
 elif st.session_state.page_number_app == 5:
     st.title("📍 Where Do You Usually Listen?")
     st.session_state.user_profile["location"] = st.selectbox(
-        "Select your main listening location:",
+        "Select your main podcast listening location:",
         ["At home", "On the go", "In the car", "While exercising"]
     )
 
