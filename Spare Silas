@@ -1,1 +1,176 @@
+import streamlit as st  # Streamlit for UI
+import os, json, logging
+import pandas as pd
+from spotipy import Spotify
+from spotipy.oauth2 import SpotifyClientCredentials
+from sklearn.preprocessing import MultiLabelBinarizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+import numpy as np
+from sklearn.metrics import accuracy_score, top_k_accuracy_score
+import matplotlib.pyplot as plt
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+# --------------- Logging Setup ---------------
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    handlers=[logging.FileHandler("app.log"), logging.StreamHandler()]
+)
+logger = logging.getLogger(__name__)
+
+# --------------- Streamlit Config ---------------
+st.set_page_config(page_title="Spotify Podcast Filter", layout="centered")
+if "page" not in st.session_state: st.session_state.page = 0
+if "user_profile" not in st.session_state:
+    st.session_state.user_profile = {"interests": [], "languages": [], "duration": (20,60), "mood": [], "location": ""}
+
+PROFILE_FILE = "user_profile.json"
+DATA_FILE = "listening_history.json"  # our JSON of user listening lists
+
+# --------------- Load & Train Recommendation Model ---------------
+@st.cache(allow_output_mutation=True)
+def load_and_train():
+    # load listening history
+    raw = json.load(open(DATA_FILE, 'r'))
+    df_hist = pd.DataFrame([{"user_id":u['id'], "titles":[p['t'] for p in u['p']]} for u in raw])
+    # one-hot encode titles
+    mlb = MultiLabelBinarizer(sparse_output=True)
+    X_titles = mlb.fit_transform(df_hist['titles'])
+    titles = mlb.classes_
+    # build samples
+    X_list, y_list = [], []
+    for i,row in df_hist.iterrows():
+        user_vec = X_titles[i]
+        pos = row['titles']
+        neg_cand = list(set(titles)-set(pos))
+        # positives
+        for t in pos:
+            X_list.append(user_vec.toarray().ravel()); y_list.append(np.where(titles==t)[0][0])
+        # negatives
+        for t in np.random.choice(neg_cand, len(pos), replace=False):
+            X_list.append(user_vec.toarray().ravel()); y_list.append(np.where(titles==t)[0][0])
+    X = np.vstack(X_list); y = np.array(y_list)
+    # train/test split & model
+    X_tr,X_te,y_tr,y_te = train_test_split(X,y,test_size=0.2,random_state=42)
+    clf = LogisticRegression(multi_class='multinomial',solver='saga',max_iter=200).fit(X_tr,y_tr)
+    logger.info(f"Rec model trained: acc={accuracy_score(y_te,clf.predict(X_te)):.3f}, top5={top_k_accuracy_score(y_te,clf.predict_proba(X_te),k=5):.3f}")
+    return clf, mlb, titles, df_hist
+
+clf, mlb, titles, df_hist = load_and_train()
+
+# helper
+@st.cache
+ def recommend_for_user(user_id, K=5):
+    idx = df_hist.index[df_hist['user_id']==user_id][0]
+    vec = mlb.transform([df_hist.at[idx,'titles']])
+    probs = clf.predict_proba(vec)[0]
+    top = np.argsort(probs)[::-1][:K]
+    return [(titles[i], float(probs[i])) for i in top]
+
+# --------------- Navigation Steps ---------------
+steps = ["Welcome","Interests","Languages","Duration","Mood","Location"]
+def next_page(): st.session_state.page +=1
+ def prev_page():
+    if st.session_state.page>0: st.session_state.page-=1
+
+progress = min((st.session_state.page+1)/len(steps),1.0)
+st.progress(progress)
+
+# --------------- Pages 0-5 (Onboarding) ---------------
+if st.session_state.page==0:
+    st.title("Welcome to Your Personalized Podcast Experience!")
+    if st.button("🚀 Get Started"): next_page()
+elif st.session_state.page==1:
+    st.title("🎯 Select Your Interests")
+    opts = {"True Crime":"🕵️","Science":"🔬","Comedy":"🎭","Sports":"🏅","Business":"💼","Technology":"💻","Society":"🏛️","Health":"🧘","Art":"🎨","Music":"🎵","Spirituality":"🧘‍♂️"}
+    sel=[]; cols=st.columns(3)
+    for i,(k,e) in enumerate(opts.items()):
+        with cols[i%3]:
+            if st.checkbox(f"{e} {k}"): sel.append(k)
+    st.session_state.user_profile['interests']=sel
+elif st.session_state.page==2:
+    st.title("🌍 Select Your Preferred Languages")
+    langs=["German","English"]; sel=[]; cols=st.columns(3)
+    for i,l in enumerate(langs):
+        with cols[i%3]:
+            if st.checkbox(l): sel.append(l)
+    st.session_state.user_profile['languages']=sel
+elif st.session_state.page==3:
+    st.title("🕒 Select Your Ideal Episode Length")
+    st.session_state.user_profile['duration']=st.slider("Duration (min)",5,120,st.session_state.user_profile['duration'])
+elif st.session_state.page==4:
+    st.title("😊 Choose the Mood")
+    moods=["Relaxation","Learning","Laughter","Inspiration","Focus","Distraction"]
+    st.session_state.user_profile['mood']=st.multiselect("Select moods",moods)
+elif st.session_state.page==5:
+    st.title("📍 Where Listen?")
+    st.session_state.user_profile['location']=st.selectbox("Location",["At home","On the go","In the car","While exercising"])
+    if st.button("✅ Save Profile & Start Filtering"):
+        json.dump(st.session_state.user_profile, open(PROFILE_FILE,'w'), indent=2)
+        logger.info("Profile saved.")
+        next_page()
+
+# nav buttons
+if 0<st.session_state.page<len(steps):
+    c1,c2=st.columns(2)
+    with c1: st.button("⬅️ Back",on_click=prev_page)
+    with c2:
+        if st.session_state.page<len(steps)-1:
+            st.button("➡️ Next",on_click=next_page)
+
+# --------------- Main App ---------------
+if st.session_state.page>=len(steps):
+    # load profile
+    if os.path.exists(PROFILE_FILE):
+        user_profile=json.load(open(PROFILE_FILE,'r'))
+    else: st.error("No profile found."); st.stop()
+
+    st.title("🎵 Spotify Podcast Filter & Recs")
+    # filters
+    topics = ["True Crime","Science","Comedy","Sports","Business","Health","Technology","Society","Art","Music","Spirituality"]
+    sel_topics = st.multiselect("🎙️ Topics",topics)
+    sel_lang = st.multiselect("🌍 Language",["German","English"])
+    country = st.selectbox("🌐 Market",["CH","DE","AT","US","GB"],0)
+    host = st.text_input("👤 Host (optional)")
+    guest = st.text_input("🧑‍🤝‍🧑 Guest (optional)")
+    min_d,max_d=st.slider("⏱️ Duration",5,180,(10,60))
+
+    if st.button("🔍 Search via Spotify"):
+        # build query
+        q = " ".join(user_profile['interests']+sel_topics)
+        if not q.strip(): st.warning("Select at least one topic."); return
+        with st.spinner("Searching..."):
+            sp = Spotify(auth_manager=SpotifyClientCredentials(client_id=os.getenv('SPOTIPY_CLIENT_ID'), client_secret=os.getenv('SPOTIPY_CLIENT_SECRET')))
+            results = sp.search(q=q, type='show', limit=20, market=country)
+            # filter and display via TFIDF
+            show_texts, info, avg_d, langs = [],[],[],[]
+            for s in results['shows']['items']:
+                name=s['name']; desc=s['description']; lang=s.get('languages',[''])[0].lower()
+                if sel_lang and lang not in [l[:2].lower() for l in sel_lang]: continue
+                eps = sp.show_episodes(s['id'], limit=3)['items']
+                durs=[e['duration_ms']//60000 for e in eps]
+                if not any(min_d<=d<=max_d for d in durs): continue
+                full = desc + " " + " ".join([e['description'] for e in eps])
+                show_texts.append(full); info.append((name,s['publisher'],desc,s['external_urls']['spotify'],s['images'][0]['url'] if s['images'] else "")); avg_d.append((name,sum(durs)/len(durs))); langs.append(lang)
+            # display
+            if show_texts:
+                profile_text = " ".join(user_profile['interests']+user_profile['mood']+[user_profile['location']]+sel_topics)
+                tfidf=TfidfVectorizer(stop_words='english'); mat=tfidf.fit_transform(show_texts+[profile_text])
+                sims=cosine_similarity(mat[-1],mat[:-1])[0]
+                top = sims.argsort()[-15:][::-1]
+                st.subheader("🎧 Recommendations (TF-IDF)")
+                for i in top:
+                    n,pub,desc,link,img=info[i]
+                    st.image(img,width=200); st.markdown(f"**{n}** – {pub}"); st.write(desc[:200]+"..."); st.markdown(f"[Listen]({link})"); st.markdown("---")
+            else:
+                st.warning("No matches.")
+    # Recommend from user history
+    st.subheader("🤖 Personalized Recommendations")
+    user_id = st.selectbox("Select User ID for Rec demo", df_hist['user_id'].tolist())
+    if st.button("Get Model-Based Recos"):
+        recs = recommend_for_user(user_id, K=5)
+        st.table(pd.DataFrame(recs, columns=['Podcast','Score']))
+
 
